@@ -1,0 +1,51 @@
+// .groovy file for Dev_BLE_Test_Suite_By_Label_Pipeline
+// For more info:
+// Test Suite By Label documentation: https://confluence.itg.ti.com/display/LPRFBLE/Test+Suite+By+Label+Documentation
+// How to run Test by Label pipeline: https://confluence.itg.ti.com/display/LPRFBLE/Using+Test+Suite+By+Label
+env.PYTHON_INSTALL = "C:\\Python38\\python.exe"
+env.RESULTS_ROOT_PATH = "C:\\testresults\\test_by_label\\${env.JOB_NAME}_${env.BUILD_NUMBER}"
+
+def test_list = [] as List
+def hex_list = []
+env.RELATIVE_TEST_UTILS_PATH = "ble_env\\common\\test_utils.groovy"
+env.MAP_FILE_ERROR = "False"
+
+def test_infrastructure = "SWAT"
+
+pipeline {
+
+	options { 
+		timestamps () // To show timestamps in the Jenkins console
+		ansiColor('xterm') // This is for the Lunas2 in the Jenkins console - if it isn't enabled then before each Lunas2 print it will print garbage
+	}
+
+	// PC name where the Jenkins pipeline is running
+    agent { node { label "${env.PC_LABEL}" }}
+    
+	stages {
+		stage("Parse Input") {
+			steps {
+				script{
+                    div_name=number
+                    number++
+                    address= A4:C1:38:D8:AD:A9
+                    echo 'Starting BLE Attack'
+                    bat 'python Telink_zero_ltk_installation.py COM13 A4:C1:38:D8:AD:A9'
+                    if(==0)
+                    result >>text.txt
+                    else
+
+                }
+			}
+		}
+
+	}
+
+	post {
+		always {
+			script {
+		
+			}
+		}
+	}
+}
