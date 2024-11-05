@@ -10,7 +10,7 @@ pipeline {
         stage('Device Configuration') {
             steps {
                 echo 'Starting device configuration...'
-                // הפקודה/סקריפט להגדרת קונפיגורציה ראשונית במכשיר
+                // Command/script for initial device configuration
                 sh 'your-configuration-command'
             }
         }
@@ -19,7 +19,7 @@ pipeline {
             steps {
                 script {
                     echo 'Retrieving Bluetooth MAC address...'
-                    // כאן ניתן להוסיף פקודה להשגת כתובת MAC. לדוגמה:
+                    // Command to retrieve MAC address, for example:
                     def mac_address = sh(script: 'hcitool dev | grep hci | awk \'{print $2}\'', returnStdout: true).trim()
                     
                     if (!mac_address) {
@@ -27,7 +27,7 @@ pipeline {
                     }
                     
                     echo "Retrieved Bluetooth MAC address: ${mac_address}"
-                    // במידה ואתה מעוניין להשתמש בערך שהוזן כפרמטר במקום הפלט מהפקודה, אפשר למחוק את השורה הזו
+                    // If you prefer to use the parameter value instead of the command output, you can delete this line
                     mac_address = params.MAC_ADDRESS ?: mac_address
                 }
             }
@@ -39,7 +39,7 @@ pipeline {
                     echo 'Running Telink script with specified COM port and MAC address...'
                     def com_port = params.COM_PORT
                     def mac_address = params.MAC_ADDRESS
-                    // הרצת סקריפט Telink עם הפורמט המבוקש
+                    // Running Telink script with the specified format
                     sh "python3 path/to/Telink_zero_ltk_installation.py ${com_port} ${mac_address}"
                 }
             }
