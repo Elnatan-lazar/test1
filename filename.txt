@@ -10,8 +10,8 @@ pipeline {
         stage('Device Configuration') {
             steps {
                 echo 'Starting device configuration...'
-                // Command/script for initial device configuration
-                sh 'your-configuration-command'
+                // Command/script for initial device configuration in Windows
+                bat 'your-configuration-command.bat'
             }
         }
 
@@ -19,15 +19,14 @@ pipeline {
             steps {
                 script {
                     echo 'Retrieving Bluetooth MAC address...'
-                    // Command to retrieve MAC address, for example:
-                    def mac_address = sh(script: 'hcitool dev | grep hci | awk \'{print $2}\'', returnStdout: true).trim()
+                    // Here, use a command compatible with Windows to retrieve the MAC address
+                    def mac_address = bat(script: 'getmac | findstr "Bluetooth"', returnStdout: true).trim()
                     
                     if (!mac_address) {
                         error 'No Bluetooth MAC address found.'
                     }
                     
                     echo "Retrieved Bluetooth MAC address: ${mac_address}"
-                    // If you prefer to use the parameter value instead of the command output, you can delete this line
                     mac_address = params.MAC_ADDRESS ?: mac_address
                 }
             }
@@ -39,8 +38,8 @@ pipeline {
                     echo 'Running Telink script with specified COM port and MAC address...'
                     def com_port = params.COM_PORT
                     def mac_address = params.MAC_ADDRESS
-                    // Running Telink script with the specified format
-                    sh "python3 path/to/Telink_zero_ltk_installation.py ${com_port} ${mac_address}"
+                    // Run the Telink script with the specified format in Windows
+                    bat "python path\\to\\Telink_zero_ltk_installation.py ${com_port} ${mac_address}"
                 }
             }
         }
