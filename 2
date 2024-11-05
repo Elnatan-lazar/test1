@@ -13,8 +13,7 @@ env.MAP_FILE_ERROR = "False"
 def test_infrastructure = "SWAT"
 
 pipeline {
-
-	options { 
+    options { 
 		timestamps () // To show timestamps in the Jenkins console
 		ansiColor('xterm') // This is for the Lunas2 in the Jenkins console - if it isn't enabled then before each Lunas2 print it will print garbage
 	}
@@ -22,30 +21,78 @@ pipeline {
 	// PC name where the Jenkins pipeline is running
     agent { node { label "${env.PC_LABEL}" }}
     
-	stages {
-		stage("Parse Input") {
-			steps {
-				script{
-                    div_name=number
-                    number++
-                    address= A4:C1:38:D8:AD:A9
-                    echo 'Starting BLE Attack'
-                    bat 'python Telink_zero_ltk_installation.py COM13 A4:C1:38:D8:AD:A9'
-                    if(==0)
-                    result >>text.txt
-                    else
+   parameters {
+        string(name: 'COM_PORT', defaultValue: 'COM1', description: 'COM port number for the device')
+        string(name: 'MAC_ADDRESS', defaultValue: '', description: 'Bluetooth MAC address of the device')
+    }
 
+    stages {
+        stage('Device Configuration') {
+            steps {
+                echo 'Starting device configuration...'
+                // Command/script for initial device configuration in Windows
+                bat 'your-configuration-command.bat'
+            }
+        }
+
+        stage('Retrieve Bluetooth MAC Address') {
+            steps {
+                script {
+                    echo 'Retrieving Bluetooth MAC address...'
+                    // Here, use a command compatible with Windows to retrieve the MAC address
+                    def mac_address = bat(script: 'getmac | findstr "Bluetooth"', returnStdout: true).trim() // need to be cahnge to find out a mac adrees of the deiveice
+                    
+                    if (!mac_address) {
+                        error 'No Bluetooth MAC address found.'
+                    }
+                    
+                    echo "Retrieved Bluetooth MAC address: ${mac_address}"
+                    mac_address = params.MAC_ADDRESS ?: mac_address
                 }
-			}
-		}
+            }
+        }
 
-	}
+        stage('Run Telink Script') {
+            steps {
+                script {
+                    echo 'Running Telink script with specified COM port and MAC address...'
+                    def com_port = params.COM_PORT
+                    def mac_address = params.MAC_ADDRESS
+                    // Run the Telink script with the specified format in Windows
+                    bat "python Telink_key_size_overflow.py ${com_port} ${mac_address}"
+                    // need to add the output of the SweynTooth 
+                }
+            }
+        }
+    }
 
-	post {
-		always {
-			script {
-		
-			}
-		}
-	}
+    post {
+        success {
+            echo 'Process completed successfully!'
+        }
+        failure {
+            echo 'Process failed!'
+        }
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
